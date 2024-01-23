@@ -1,9 +1,18 @@
 import random
 import pandas as pd
-import xlsxwriter
-import streamlit as st
+#import xlsxwriter
+#import streamlit as st
 from pathlib import Path
 import os
+
+def bloco_da_pergunta(dataframe,numeros_list,index):
+    try:
+        pergunta = dataframe.loc[numeros_list[index]:numeros_list[index+1]-1]
+    except:
+        pergunta = dataframe.loc[numeros_list[index]::]
+   
+    return pergunta
+    
 
 
 def op_sexo(total,masculino,feminino):

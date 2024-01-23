@@ -1,14 +1,15 @@
 # %%
 import random
 import pandas as pd
-import xlsxwriter
-import streamlit as st
+#import xlsxwriter
+#import streamlit as st
 from pathlib import Path
 import os
 # from io import BytesIO
 # import base64
 # import matplotlib.pyplot as plt
 from input_clear import data_input_cleaner
+from data_manipulation import bloco_da_pergunta,preenche
 # %%
 ROOT_PATH=Path(__file__).parent.parent
 SRCS=ROOT_PATH / 'Codigos'
@@ -19,7 +20,7 @@ INPUT_FILE_NAME=os.listdir(INPUT_FILE_PATH).pop()
 INPUT_SHEET_NAME='Base_%'
 
 
-input_data = data_input_cleaner()
+input_data,perguntas_linha = data_input_cleaner()
 
 
 
@@ -28,61 +29,60 @@ input_data = data_input_cleaner()
 
 # %%
 
-numeros = input_data.linha
+numero_linha= perguntas_linha.linha
 
 
 
 # %%
 dict_perguntas_completas = {}
-for i in range(numeros.__len__()):
-    try:
-        pergunta = ritter.loc[numeros[i]:numeros[i+1]-1]
-    except:
-        pergunta = ritter.loc[numeros[i]::]
-   
-    index,texto=perguntas.iloc[i]
-    #print(texto)
-   
+for i in range(numero_linha.__len__()):
     dict_opcoes={}
+    index,texto=perguntas_linha.iloc[i]
+    
+    pergunta_bloco = bloco_da_pergunta(input_data,numero_linha,i)
+
+    
 
 
 
-    for index,linha in pergunta.iterrows():#percorrendo em cada pergunta
+    for index,linha in pergunta_bloco.iterrows():#percorrendo em cada pergunta
+        
         if not pd.isna(linha['Unnamed: 0']):
             dados_list = [{'pergunta':linha['Unnamed: 0']},]
         
         if not pd.isna(linha['Unnamed: 1']):#achou uma opcao
-
+            option_list =  {'opcao':linha['Unnamed: 1']}
+            
             op=0
             aux = []
-            opcao_list =  {'opcao':linha['Unnamed: 1']}
-            
             for j in range(3,len(linha)):
+                option = linha.iloc[j]
+                option_not_empty = not pd.isna(option)
                 
-                if not pd.isna(linha.iloc[j]) :
-                    aux.append(linha.iloc[j])
-                   # print(f"valor {j-1}, certo")
+                if option_not_empty :
+                    aux.append(option)
+                  
                 else:#se linha com opcao for vazia
-                    
-                    #print(aux)
+            
                     op+=1
-                    #print(op)
-                    resultado = preenche(op, *aux)  # Supondo que preenche retorna um dicionário
-                    chave, valor = next(iter(resultado.items()))
-                    opcao_list[chave]=valor
+                    pergunta_dict = preenche(op, *aux)  # Supondo que preenche retorna um dicionário
+                    print(f"pergunta:{(pergunta_dict)}")
+                    chave, valor = next(iter(pergunta_dict.items()))
+                    option_list[chave]=valor
+                    print(f"opcao:{option_list}")
                     aux=[]
-                    #print(f"valor {j-1},errado")
+                   
             if op==3:
-                resultado = preenche(4, *aux)  # Supondo que preenche retorna um dicionário
-                chave, valor = next(iter(resultado.items()))
-                opcao_list[chave]=valor
+                pergunta_dict = preenche(4, *aux)  # Supondo que preenche retorna um dicionário
+                chave, valor = next(iter(pergunta_dict.items()))
+                option_list[chave]=valor
 
-            #print('teste: ',opcao_list['opcao'])
-            dict_opcoes[opcao_list['opcao']] =opcao_list
+            
+            dict_opcoes[option_list['opcao']] =option_list
     dict_perguntas_completas[texto]=dict_opcoes      
     
 
-print(dict_perguntas_completas)
+#print(dict_perguntas_completas)
 
 
 # %% 
