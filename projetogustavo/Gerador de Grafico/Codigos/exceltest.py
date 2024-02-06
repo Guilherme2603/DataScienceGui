@@ -1,13 +1,9 @@
-# %%
+
 import random
-import pandas as pd
-#import xlsxwriter
-#import streamlit as st
-from pathlib import Path
+import xlsxwriter
 import os
-# from io import BytesIO
-# import base64
-# import matplotlib.pyplot as plt
+import pandas as pd
+from pathlib import Path
 from input_clear import data_input_cleaner
 from data_manipulation import bloco_da_pergunta,preenche
 # %%
@@ -23,17 +19,10 @@ INPUT_SHEET_NAME='Base_%'
 input_data,perguntas_linha = data_input_cleaner()
 
 
-
-# %% [markdown]
-# ### pegando dados
-
 # %%
 
 numero_linha= perguntas_linha.linha
 
-
-
-# %%
 dict_perguntas_completas = {}
 for i in range(numero_linha.__len__()):
     dict_opcoes={}
@@ -42,9 +31,6 @@ for i in range(numero_linha.__len__()):
     pergunta_bloco = bloco_da_pergunta(input_data,numero_linha,i)
 
     
-
-
-
     for index,linha in pergunta_bloco.iterrows():#percorrendo em cada pergunta
         
         if not pd.isna(linha['Unnamed: 0']):
@@ -82,13 +68,9 @@ for i in range(numero_linha.__len__()):
     dict_perguntas_completas[texto]=dict_opcoes      
     
 
-#print(dict_perguntas_completas)
 
-
-# %% 
-st.write('graficos: ')
 # %%
-import random
+
 # Seu código existente para carregar dados e estruturar perguntas
 
 # Criar um escritor de Excel
@@ -98,7 +80,7 @@ workbook = xlsxwriter.Workbook(excel_file_path)
 # Criar uma lista para armazenar os DataFrames de cada pergunta
 dataframes = []
 
-for pergunta in perguntas['pergunta']:
+for pergunta in perguntas_linha['pergunta']:
     print(dict_perguntas_completas[pergunta])
     infos_dict = {}
     for opcao, valor in dict_perguntas_completas[pergunta].items():
@@ -150,4 +132,4 @@ resultado_final.to_excel(excel_file_path, sheet_name='Dados', index=False, engin
 # Fechar o arquivo Excel
 workbook.close()
 
-st.write("Arquivo Excel salvo com sucesso!")
+
