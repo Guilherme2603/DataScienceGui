@@ -1,9 +1,3 @@
-import random
-import pandas as pd
-#import xlsxwriter
-#import streamlit as st
-from pathlib import Path
-import os
 
 def bloco_da_pergunta(dataframe,numeros_list,index):
     try:
