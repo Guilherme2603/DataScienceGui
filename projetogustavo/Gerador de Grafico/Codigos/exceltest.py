@@ -56,11 +56,14 @@ workbook = xlsxwriter.Workbook(excel_file_path)
 # Função para gerar gráficos de barras
 def gerar_grafico(worksheet, labels, values, pergunta, valor_total):
     chart = workbook.add_chart({'type': 'bar'})
-    chart.add_series({
-        'values': f"='{worksheet.get_name()}'!$B$2:$B${len(values) + 1}",
-        'categories': f"='{worksheet.get_name()}'!$A$2:$A${len(labels) + 1}",
-        'name': 'Valores'
-    })
+    for i, value in enumerate(values):
+        chart.add_series({
+            'values': f"='{worksheet.get_name()}'!$B${i+2}",
+            'categories': f"='{worksheet.get_name()}'!$A${i+2}",
+            'name': labels[i],
+            'data_labels': {'value': True, 'num_format': '0.00%'},
+            'fill': {'color': colors[i % len(colors)]}
+        })
     chart.set_x_axis({'name': 'Opções'})
     chart.set_y_axis({'name': 'Valores (%)'})
     chart.set_title({'name': f'Pergunta: {pergunta} - Total = {valor_total}'})
@@ -69,6 +72,9 @@ def gerar_grafico(worksheet, labels, values, pergunta, valor_total):
 
 # Criar uma lista para armazenar os DataFrames de cada pergunta
 dataframes = []
+
+# Usar uma paleta de cores consistente
+colors = ['#4CAF50', '#FFC107', '#2196F3', '#FF5722', '#9C27B0', '#E91E63', '#00BCD4', '#8BC34A']
 
 for pergunta in perguntas_linha['pergunta']:
     print(dict_perguntas_completas[pergunta])
@@ -84,9 +90,6 @@ for pergunta in perguntas_linha['pergunta']:
     if infos_dict:
         labels = list(infos_dict.keys())
         values = list(infos_dict.values())
-
-        # Usar uma paleta de cores consistente
-        colors = ['#4CAF50', '#FFC107', '#2196F3', '#FF5722', '#9C27B0', '#E91E63', '#00BCD4', '#8BC34A']
 
         # Adicionar uma nova planilha para cada pergunta
         pergunta_completa = pergunta
